@@ -11,7 +11,7 @@
 		{% for row in board %}
 			<tr>
 				{% for cell in row %}
-					<td class="cell" style="background-color:#FF0000"><button>{{ cell }}</button></td>
+					<td class="cell" style="background-color:#FF0000">{{ cell }}</td>
 				{% endfor %}
 			</tr>
 		{% endfor %}
@@ -41,6 +41,7 @@
 							alert('Game Over! You clicked on a mine.');
 						} else {
 							cell.innerText = data.count;
+							cell.style.backgroundColor = "#FFFFFF"
 						}
 					})
 					.catch(error => console.error('Error:', error));
