@@ -8,7 +8,7 @@ WIDTH = 10
 HEIGHT = 10
 MINES = 20
 BOMB_TILE = 'B'
-EMPTY_TILE = EMTPY_TILE
+EMPTY_TILE = '_'
 
 # Initialize the game board
 board = [[EMTPY_TILE for _ in range(WIDTH)] for _ in range(HEIGHT)]
