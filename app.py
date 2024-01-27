@@ -9,7 +9,7 @@ HEIGHT = 10
 MINES = 20
 
 # Initialize the game board
-board = [[' ' for _ in range(WIDTH)] for _ in range(HEIGHT)]
+board = [['_' for _ in range(WIDTH)] for _ in range(HEIGHT)]
 mines = [(random.randint(0, WIDTH-1), random.randint(0, HEIGHT-1)) for _ in range(MINES)]
 for mine in mines:
 	board[mine[1]][mine[0]] = 'M'
