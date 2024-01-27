@@ -7,12 +7,14 @@ app = Flask(__name__)
 WIDTH = 10
 HEIGHT = 10
 MINES = 20
+BOMB_TILE = 'B'
+EMPTY_TILE = '_'
 
 # Initialize the game board
-board = [['_' for _ in range(WIDTH)] for _ in range(HEIGHT)]
+board = [[EMPTY_TILE for _ in range(WIDTH)] for _ in range(HEIGHT)]
 mines = [(random.randint(0, WIDTH-1), random.randint(0, HEIGHT-1)) for _ in range(MINES)]
 for mine in mines:
-	board[mine[1]][mine[0]] = 'M'
+	board[mine[1]][mine[0]] = BOMB_TILE
 
 # count adjacent mines
 def count_adjacent_mines(x, y):
@@ -20,7 +22,7 @@ def count_adjacent_mines(x, y):
 	for dx in [-1, 0, 1]:
 		for dy in [-1, 0, 1]:
 			nx, ny = x + dx, y + dy
-			if 0 <= nx < WIDTH and 0 <= ny < HEIGHT and board[ny][nx] == 'M':
+			if 0 <= nx < WIDTH and 0 <= ny < HEIGHT and board[ny][nx] == BOMB_TILE:
 				count += 1
 	return count
 
@@ -35,7 +37,7 @@ def click():
 	data = request.get_json()
 	x, y = data['x'], data['y']
 
-	if board[y][x] == 'M':
+	if board[y][x] == BOMB_TILE:
 		# Game over
 		return jsonify({'status': 'game_over'})
 
