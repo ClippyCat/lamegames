@@ -11,7 +11,7 @@ BOMB_TILE = 'B'
 EMPTY_TILE = '_'
 
 # Initialize the game board
-board = [[EMTPY_TILE for _ in range(WIDTH)] for _ in range(HEIGHT)]
+board = [[EMPTY_TILE for _ in range(WIDTH)] for _ in range(HEIGHT)]
 mines = [(random.randint(0, WIDTH-1), random.randint(0, HEIGHT-1)) for _ in range(MINES)]
 for mine in mines:
 	board[mine[1]][mine[0]] = BOMB_TILE
