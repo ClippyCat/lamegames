@@ -1,11 +1,12 @@
 const table = document.getElementById('minesweeper');
-const cells = document.querySelectorAll('.cell');
+const cells = document.querySelectorAll('table button');
 
 cells.forEach(function (cell) {
 	cell.addEventListener('click', function () {
-		const x = cell.cellIndex;
-		const y = cell.parentNode.rowIndex;
-
+		write_message("Clickaroni!");
+		const x = cell.parent.attr("data-col");
+		const y = cell.parent.parent.attr("data-row");
+		
 		// AJAX request to the Flask backend
 		fetch('/click', {
 			method: 'POST',

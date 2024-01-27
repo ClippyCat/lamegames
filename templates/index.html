@@ -12,9 +12,9 @@
 <body>
 	<table>
 		{% for row in board %}
-			<tr>
+			<tr data-row="{{ loop.index0 }}">
 				{% for cell in row %}
-					<td><button>_</button></td>
+					<td data-col="{{ loop.index0 }}"><button>_</button></td>
 				{% endfor %}
 			</tr>
 		{% endfor %}
