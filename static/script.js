@@ -2,11 +2,11 @@ const table = document.getElementById('minesweeper');
 const cells = document.querySelectorAll('table button');
 
 cells.forEach(function (cell) {
-	cell.addEventListener('click', function () {
-		write_message("Clickaroni!");
-		const x = cell.parent.attr("data-col");
-		const y = cell.parent.parent.attr("data-row");
-		
+	cell.addEventListener('click', function (e) {
+//		write_message("Clickaroni!");
+		const btn=e.target
+		const x = parseInt(btn.parentElement.getAttribute("data-col"));
+		const y = parseInt(btn.parentElement.getAttribute("data-row"));
 		// AJAX request to the Flask backend
 		fetch('/click', {
 			method: 'POST',
@@ -23,6 +23,8 @@ cells.forEach(function (cell) {
 				cell.innerText = data.count;
 				cell.style.backgroundColor = "#FFFFFF"
 			}
+			const msg = x+ ", "+ y + ": " + btn.innerText;
+			write_message(msg);
 		})
 		.catch(error => console.error('Error:', error));
 	});
