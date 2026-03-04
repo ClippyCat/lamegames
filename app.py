@@ -3,53 +3,121 @@ import random
 
 app = Flask(__name__)
 
-# Game parameters
 WIDTH = 10
 HEIGHT = 10
 MINES = 20
-BOMB_TILE = 'B'
-EMPTY_TILE = '_'
 
-# Initialize the game board
-board = [[EMPTY_TILE for _ in range(WIDTH)] for _ in range(HEIGHT)]
-mines = [(random.randint(0, WIDTH-1), random.randint(0, HEIGHT-1)) for _ in range(MINES)]
-for mine in mines:
-	board[mine[1]][mine[0]] = BOMB_TILE
 
-# count adjacent mines
-def count_adjacent_mines(x, y):
-	count = 0
-	for dx in [-1, 0, 1]:
-		for dy in [-1, 0, 1]:
-			nx, ny = x + dx, y + dy
-			if 0 <= nx < WIDTH and 0 <= ny < HEIGHT and board[ny][nx] == BOMB_TILE:
-				count += 1
-	return count
+class Game:
+    def __init__(self):
+        self.reset()
 
-# Route for the main page
+    def reset(self):
+        self.revealed = [[False] * WIDTH for _ in range(HEIGHT)]
+        self.flagged = [[False] * WIDTH for _ in range(HEIGHT)]
+        self.board = [[0] * WIDTH for _ in range(HEIGHT)]
+        self.over = False
+        self.won = False
+
+        mine_positions = set()
+        while len(mine_positions) < MINES:
+            x = random.randint(0, WIDTH - 1)
+            y = random.randint(0, HEIGHT - 1)
+            mine_positions.add((x, y))
+        self.mines = mine_positions
+
+        for mx, my in mine_positions:
+            self.board[my][mx] = -1
+
+        for y in range(HEIGHT):
+            for x in range(WIDTH):
+                if self.board[y][x] != -1:
+                    self.board[y][x] = sum(
+                        1
+                        for dx in [-1, 0, 1]
+                        for dy in [-1, 0, 1]
+                        if (dx, dy) != (0, 0)
+                        and 0 <= x + dx < WIDTH
+                        and 0 <= y + dy < HEIGHT
+                        and self.board[y + dy][x + dx] == -1
+                    )
+
+    def valid(self, x, y):
+        return 0 <= x < WIDTH and 0 <= y < HEIGHT
+
+    def flood_reveal(self, start_x, start_y):
+        cells = []
+        stack = [(start_x, start_y)]
+        while stack:
+            x, y = stack.pop()
+            if not self.valid(x, y) or self.revealed[y][x] or self.flagged[y][x]:
+                continue
+            self.revealed[y][x] = True
+            cells.append({'x': x, 'y': y, 'count': self.board[y][x]})
+            if self.board[y][x] == 0:
+                for dx in [-1, 0, 1]:
+                    for dy in [-1, 0, 1]:
+                        if dx == 0 and dy == 0:
+                            continue
+                        stack.append((x + dx, y + dy))
+        return cells
+
+    def click(self, x, y):
+        if self.over or self.flagged[y][x] or self.revealed[y][x]:
+            return {'status': 'noop'}
+        if self.board[y][x] == -1:
+            self.over = True
+            return {
+                'status': 'game_over',
+                'mines': [{'x': mx, 'y': my} for mx, my in self.mines],
+            }
+        cells = self.flood_reveal(x, y)
+        unrevealed_safe = sum(
+            1
+            for row in range(HEIGHT)
+            for col in range(WIDTH)
+            if not self.revealed[row][col] and self.board[row][col] != -1
+        )
+        if unrevealed_safe == 0:
+            self.over = True
+            self.won = True
+            return {'status': 'win', 'cells': cells}
+        return {'status': 'ok', 'cells': cells}
+
+    def flag(self, x, y):
+        if self.over or self.revealed[y][x]:
+            return {'status': 'noop'}
+        self.flagged[y][x] = not self.flagged[y][x]
+        return {'status': 'ok', 'flagged': self.flagged[y][x]}
+
+
+game = Game()
+
+
 @app.route('/')
 def index():
-	return render_template('index.html', board=board)
+    return render_template('index.html', width=WIDTH, height=HEIGHT)
 
-# AJAX endpoint for handling clicks
+
+@app.route('/new-game', methods=['POST'])
+def new_game():
+    game.reset()
+    return jsonify({'status': 'ok'})
+
+
 @app.route('/click', methods=['POST'])
 def click():
-	data = request.get_json()
-	x, y = data['x'], data['y']
+    data = request.get_json()
+    x, y = data['x'], data['y']
+    return jsonify(game.click(x, y))
 
-	if board[y][x] == BOMB_TILE:
-		# Game over
-		return jsonify({'status': 'game_over'})
 
-	# Check for adjacent mines
-	count = count_adjacent_mines(x, y)
-	board[y][x] = str(count)
-
-	return jsonify({'status': 'success', 'count': count})
+@app.route('/flag', methods=['POST'])
+def flag():
+    data = request.get_json()
+    x, y = data['x'], data['y']
+    return jsonify(game.flag(x, y))
 
 
 if __name__ == '__main__':
-	app.run(
-		host='0.0.0.0', port=8000,
-		debug=True
-	)
+    app.run(host='0.0.0.0', port=8000, debug=True)

@@ -4,21 +4,20 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
-	<script defer src="{{ url_for('static', filename='script.js') }}"></script>
 	<script defer src="{{ url_for('static', filename='gamelog.js') }}"></script>
+	<script defer src="{{ url_for('static', filename='script.js') }}"></script>
 	<title>Minesweeper</title>
 </head>
-
 <body>
-	<table>
-		{% for row in board %}
-			{% set row_i = loop.index0 %}
-			<tr data-row="{{ loop.index0 }}">
-				{% for cell in row %}
-					{% set col_i = loop.index0 %}
-					<td data-row="{{ row_i }}" data-col="{{ col_i }}"><button>_</button></td>
-				{% endfor %}
-			</tr>
+	<h1>Minesweeper</h1>
+	<button id="new-game">New Game</button>
+	<table id="minesweeper">
+		{% for row in range(height) %}
+		<tr data-row="{{ row }}">
+			{% for col in range(width) %}
+			<td><button data-row="{{ row }}" data-col="{{ col }}"></button></td>
+			{% endfor %}
+		</tr>
 		{% endfor %}
 	</table>
 	{% include "gamelog.html" %}

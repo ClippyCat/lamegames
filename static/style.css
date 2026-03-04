@@ -1,9 +1,99 @@
-td {
+body {
 	font-family: monospace;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background: #c0c0c0;
+	margin: 0;
+	padding: 16px;
 }
-td button {
-	width: 100%;
-	height: 100%;
-	border-radius: 0px;
+
+h1 {
+	margin: 0 0 8px;
+}
+
+#new-game {
+	margin-bottom: 10px;
+	padding: 6px 18px;
+	font-size: 1rem;
+	cursor: pointer;
+	border: 2px outset #fff;
+	background: #c0c0c0;
+}
+
+#new-game:active {
+	border-style: inset;
+}
+
+table {
 	border-collapse: collapse;
+	border: 3px inset #808080;
+}
+
+td {
+	padding: 0;
+}
+
+td button {
+	width: 32px;
+	height: 32px;
+	font-size: 13px;
+	font-family: monospace;
+	font-weight: bold;
+	border: 2px outset #fff;
+	background: #c0c0c0;
+	cursor: pointer;
+	line-height: 1;
+}
+
+td button:hover:not(:disabled) {
+	background: #d4d4d4;
+}
+
+td button:active:not(:disabled) {
+	border-style: inset;
+}
+
+td button.revealed {
+	border: 1px solid #808080;
+	background: #bdbdbd;
+	cursor: default;
+}
+
+td button.mine {
+	background: #ff5555;
+}
+
+td button.flagged {
+	background: #c0c0c0;
+}
+
+td button.n1 { color: #0000ff; }
+td button.n2 { color: #007b00; }
+td button.n3 { color: #ff0000; }
+td button.n4 { color: #00007b; }
+td button.n5 { color: #7b0000; }
+td button.n6 { color: #007b7b; }
+td button.n7 { color: #000000; }
+td button.n8 { color: #7b7b7b; }
+
+details {
+	margin-top: 12px;
+	width: 100%;
+	max-width: 400px;
+}
+
+#statusbox {
+	font-size: 0.9rem;
+	padding: 4px;
+	min-height: 1.2em;
+}
+
+#logbox {
+	font-size: 0.85rem;
+	padding: 4px;
+	max-height: 150px;
+	overflow-y: auto;
+	background: #d8d8d8;
+	border: 1px inset #808080;
 }
